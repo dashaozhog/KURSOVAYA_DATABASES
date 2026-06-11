@@ -6,6 +6,7 @@
         ///  Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+        
 
         /// <summary>
         ///  Clean up any resources being used.
@@ -28,25 +29,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            dropBox = new ComboBox();
             connectButton = new Button();
             loadButton = new Button();
             dataView = new DataGridView();
+            statusLabel = new Label();
+            disconnectButton = new Button();
+            tabPage1 = new TabPage();
+            tabControl1 = new TabControl();
             ((System.ComponentModel.ISupportInitialize)dataView).BeginInit();
+            tabPage1.SuspendLayout();
+            tabControl1.SuspendLayout();
             SuspendLayout();
-            // 
-            // dropBox
-            // 
-            dropBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            dropBox.FormattingEnabled = true;
-            dropBox.Location = new Point(12, 12);
-            dropBox.Name = "dropBox";
-            dropBox.Size = new Size(178, 23);
-            dropBox.TabIndex = 0;
             // 
             // connectButton
             // 
-            connectButton.Location = new Point(23, 401);
+            connectButton.Location = new Point(969, 57);
             connectButton.Name = "connectButton";
             connectButton.Size = new Size(75, 23);
             connectButton.TabIndex = 1;
@@ -56,43 +53,88 @@
             // 
             // loadButton
             // 
-            loadButton.Location = new Point(156, 401);
+            loadButton.Location = new Point(969, 86);
             loadButton.Name = "loadButton";
             loadButton.Size = new Size(75, 23);
             loadButton.TabIndex = 2;
             loadButton.Text = "Load";
             loadButton.UseVisualStyleBackColor = true;
-            loadButton.Click += loadButton_Click;
             // 
             // dataView
             // 
             dataView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataView.Location = new Point(327, 84);
+            dataView.Location = new Point(322, 66);
             dataView.Name = "dataView";
-            dataView.Size = new Size(425, 245);
+            dataView.Size = new Size(548, 273);
             dataView.TabIndex = 3;
+            // 
+            // statusLabel
+            // 
+            statusLabel.AutoSize = true;
+            statusLabel.Location = new Point(973, 39);
+            statusLabel.Name = "statusLabel";
+            statusLabel.Size = new Size(39, 15);
+            statusLabel.TabIndex = 5;
+            statusLabel.Text = "Status";
+            // 
+            // disconnectButton
+            // 
+            disconnectButton.Enabled = false;
+            disconnectButton.Location = new Point(969, 115);
+            disconnectButton.Name = "disconnectButton";
+            disconnectButton.Size = new Size(75, 23);
+            disconnectButton.TabIndex = 6;
+            disconnectButton.Text = "Disconnect";
+            disconnectButton.UseVisualStyleBackColor = true;
+            disconnectButton.Click += disconnectButton_Click;
+            // 
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(dataView);
+            tabPage1.Location = new Point(4, 24);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(920, 398);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "tabPage1";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabControl1
+            // 
+            tabControl1.Controls.Add(tabPage1);
+            tabControl1.Location = new Point(12, 12);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(928, 426);
+            tabControl1.TabIndex = 4;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(dataView);
-            Controls.Add(loadButton);
+            ClientSize = new Size(1056, 450);
+            Controls.Add(disconnectButton);
+            Controls.Add(statusLabel);
             Controls.Add(connectButton);
-            Controls.Add(dropBox);
+            Controls.Add(loadButton);
+            Controls.Add(tabControl1);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)dataView).EndInit();
+            tabPage1.ResumeLayout(false);
+            tabControl1.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
-
-        private ComboBox dropBox;
         private Button connectButton;
         private Button loadButton;
         private DataGridView dataView;
+        private Label statusLabel;
+        private Button disconnectButton;
+        private TabPage tabPage1;
+        private TabControl tabControl1;
     }
 }
