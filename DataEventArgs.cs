@@ -13,7 +13,7 @@ namespace KURSOVAYA_DATABASES
 
         public DataEventArgs(bool isSuccess, string message)
         {
-            IsSuccess = IsSuccess;
+            IsSuccess = isSuccess;
             Message = message;
         }
     }

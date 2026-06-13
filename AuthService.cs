@@ -43,7 +43,7 @@ namespace KURSOVAYA_DATABASES
             {
                 string storedPass = await GetPassword(login);
 
-                if (storedPass == "null")
+                if (storedPass == null)
                 {
                     LoginCompleted?.Invoke(this, new LoginEventArgs(
                         success: false,

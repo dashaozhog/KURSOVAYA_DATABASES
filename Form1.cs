@@ -20,21 +20,21 @@ namespace KURSOVAYA_DATABASES
             InitializeComponent();
             DBman = new DataBaseManagement("Host=localhost;Port=5432;Username=postgres;Password=0979117981;Database=postgres");
             DBman.ConnectionChanged += OnConnChanged;
-
+            //DBman.DataChanged += 
         }
 
         private async void connectButton_Click(object sender, EventArgs e)
         {
 
             await DBman.Connect();
-            LoadTabs();
+            await LoadTabs();
 
         }
 
-        private void loadButton_Click(object sender, EventArgs e)
+        private async void loadButton_Click(object sender, EventArgs e)
         {
             var tabname = tabControl1.SelectedTab;
-            var table = DBman.LoadTableData(tabname.Name);
+             var table =await DBman.LoadTableData(tabname.Name);
 
             tabDataGridDict[tabname].DataSource = table;
 
@@ -50,7 +50,6 @@ namespace KURSOVAYA_DATABASES
                 disconnectButton.Enabled = true;
                 connectButton.Enabled = false;
                 loadButton.Enabled = true;
-
 
                 MessageBox.Show(e.Message, "Success!",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -74,9 +73,9 @@ namespace KURSOVAYA_DATABASES
             await DBman.Disconnect();
         }
 
-        private void LoadTabs()
+        private async Task LoadTabs()
         {
-            var TabPages = DBman.GetTableNames();
+            var TabPages = await DBman.GetTableNames();
             int index = 0;
             tabControl1.Controls.Remove(tabPage1);
             foreach (var tab in TabPages)
@@ -95,11 +94,11 @@ namespace KURSOVAYA_DATABASES
 
 
 
-        private void LoadTableFiels(TabPage tabpage)
+        private async Task LoadTableFiels(TabPage tabpage)
         {
             int x = 24;
             int y = 71;
-            var tableFields = DBman.GetTableFields(tabpage);
+            var tableFields = await DBman.GetTableFields(tabpage);
             foreach (var f in tableFields)
             {
                 Label idLabel = new Label();
@@ -119,11 +118,16 @@ namespace KURSOVAYA_DATABASES
                 txtbox.TabIndex = 2;
                 tabpage.Controls.Add(txtbox);
 
+                if(await DBman.isPrimary(tabpage.Name, f))
+                {
+                    txtbox.Enabled = false;
+                }
+
                 y += 35;
             }
         }
 
-        private void DataGridSetup(TabPage tabpage)
+        private async Task DataGridSetup(TabPage tabpage)
         {
             DataGridView dgv = new DataGridView();
             dgv.AllowUserToAddRows = false;
@@ -146,16 +150,20 @@ namespace KURSOVAYA_DATABASES
 
         }
 
-        private void TabLoad()
+        private async Task TabLoad()
         {
             TabPage selectedPage = tabControl1.SelectedTab;
+            if (selectedPage == null) return;
 
-            LoadTableFiels(selectedPage);
-            DataGridSetup(selectedPage);
+            if (selectedPage.Controls.Count > 0) return;
+
+            await LoadTableFiels(selectedPage);
+            await DataGridSetup(selectedPage);
         }
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        private async void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            TabLoad();
+                     
+            await TabLoad();
         }
 
 
@@ -164,14 +172,61 @@ namespace KURSOVAYA_DATABASES
 
         }
 
-        private void tabControl1_ControlAdded(object sender, ControlEventArgs e)
+        private async void tabControl1_ControlAdded(object sender, ControlEventArgs e)
         {
-            TabLoad();
+            
+
         }
 
-        private void addButton_Click(object sender, EventArgs e)
+        private async void addButton_Click(object sender, EventArgs e)
         {
-            DBman.Add("departments", "personal_id");
+            {
+                TabPage tab = tabControl1.SelectedTab;
+                string table = tab.Name;
+
+                var fieldValues = new Dictionary<string, string>();
+
+                foreach (Control ctrl in tab.Controls)
+                {
+                    if (ctrl is TextBox txt)
+                    {
+                        string columnName = txt.Name.Replace("Box", "");
+
+                        if (!string.IsNullOrWhiteSpace(txt.Text))
+                        {
+                            fieldValues[columnName] = txt.Text;
+                        }
+                    }
+                }
+
+
+                if (fieldValues.Count == 0)
+                {
+                    MessageBox.Show("Fill at least one field!", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                try
+                {
+                    await DBman.Add(table, fieldValues);
+                    MessageBox.Show("Row added successfully!", "Success",
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                }
+                catch (FormatException ex)
+                {
+                    MessageBox.Show("Invalid value: " + ex.Message, "Type Error",
+           MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Insert failed: " + ex.Message, "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
+
     }
 }
+    
+
