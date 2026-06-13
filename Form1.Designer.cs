@@ -31,19 +31,18 @@
         {
             connectButton = new Button();
             loadButton = new Button();
-            dataView = new DataGridView();
             statusLabel = new Label();
             disconnectButton = new Button();
-            tabPage1 = new TabPage();
             tabControl1 = new TabControl();
-            ((System.ComponentModel.ISupportInitialize)dataView).BeginInit();
-            tabPage1.SuspendLayout();
-            tabControl1.SuspendLayout();
+            addButton = new Button();
+            updateButton = new Button();
+            deleteButton = new Button();
+            clearButton = new Button();
             SuspendLayout();
             // 
             // connectButton
             // 
-            connectButton.Location = new Point(969, 57);
+            connectButton.Location = new Point(1189, 56);
             connectButton.Name = "connectButton";
             connectButton.Size = new Size(75, 23);
             connectButton.TabIndex = 1;
@@ -53,34 +52,29 @@
             // 
             // loadButton
             // 
-            loadButton.Location = new Point(969, 86);
+            loadButton.Enabled = false;
+            loadButton.Location = new Point(1189, 85);
             loadButton.Name = "loadButton";
             loadButton.Size = new Size(75, 23);
             loadButton.TabIndex = 2;
             loadButton.Text = "Load";
             loadButton.UseVisualStyleBackColor = true;
-            // 
-            // dataView
-            // 
-            dataView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataView.Location = new Point(322, 66);
-            dataView.Name = "dataView";
-            dataView.Size = new Size(548, 273);
-            dataView.TabIndex = 3;
+            loadButton.Click += loadButton_Click;
             // 
             // statusLabel
             // 
             statusLabel.AutoSize = true;
-            statusLabel.Location = new Point(973, 39);
+            statusLabel.Location = new Point(1207, 38);
             statusLabel.Name = "statusLabel";
             statusLabel.Size = new Size(39, 15);
             statusLabel.TabIndex = 5;
             statusLabel.Text = "Status";
+            statusLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // disconnectButton
             // 
             disconnectButton.Enabled = false;
-            disconnectButton.Location = new Point(969, 115);
+            disconnectButton.Location = new Point(1189, 114);
             disconnectButton.Name = "disconnectButton";
             disconnectButton.Size = new Size(75, 23);
             disconnectButton.TabIndex = 6;
@@ -88,31 +82,74 @@
             disconnectButton.UseVisualStyleBackColor = true;
             disconnectButton.Click += disconnectButton_Click;
             // 
-            // tabPage1
-            // 
-            tabPage1.Controls.Add(dataView);
-            tabPage1.Location = new Point(4, 24);
-            tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(920, 398);
-            tabPage1.TabIndex = 0;
-            tabPage1.Text = "tabPage1";
-            tabPage1.UseVisualStyleBackColor = true;
-            // 
             // tabControl1
             // 
-            tabControl1.Controls.Add(tabPage1);
             tabControl1.Location = new Point(12, 12);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(928, 426);
+            tabControl1.Size = new Size(1159, 623);
             tabControl1.TabIndex = 4;
+            tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
+            tabControl1.ControlAdded += tabControl1_ControlAdded;
+            // 
+            // addButton
+            // 
+            addButton.BackColor = SystemColors.HotTrack;
+            addButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            addButton.ForeColor = SystemColors.HighlightText;
+            addButton.Location = new Point(1181, 249);
+            addButton.Name = "addButton";
+            addButton.Size = new Size(105, 37);
+            addButton.TabIndex = 7;
+            addButton.Text = "Add";
+            addButton.UseVisualStyleBackColor = false;
+            addButton.Click += addButton_Click;
+            // 
+            // updateButton
+            // 
+            updateButton.BackColor = Color.LimeGreen;
+            updateButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            updateButton.ForeColor = SystemColors.HighlightText;
+            updateButton.Location = new Point(1181, 301);
+            updateButton.Name = "updateButton";
+            updateButton.Size = new Size(105, 37);
+            updateButton.TabIndex = 8;
+            updateButton.Text = "Update";
+            updateButton.UseVisualStyleBackColor = false;
+            // 
+            // deleteButton
+            // 
+            deleteButton.BackColor = Color.Crimson;
+            deleteButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            deleteButton.ForeColor = SystemColors.HighlightText;
+            deleteButton.Location = new Point(1181, 356);
+            deleteButton.Name = "deleteButton";
+            deleteButton.Size = new Size(105, 37);
+            deleteButton.TabIndex = 9;
+            deleteButton.Text = "Delete";
+            deleteButton.UseVisualStyleBackColor = false;
+            // 
+            // clearButton
+            // 
+            clearButton.BackColor = Color.Black;
+            clearButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            clearButton.ForeColor = SystemColors.HighlightText;
+            clearButton.Location = new Point(1181, 409);
+            clearButton.Name = "clearButton";
+            clearButton.Size = new Size(105, 37);
+            clearButton.TabIndex = 10;
+            clearButton.Text = "Clear";
+            clearButton.UseVisualStyleBackColor = false;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1056, 450);
+            ClientSize = new Size(1298, 647);
+            Controls.Add(clearButton);
+            Controls.Add(deleteButton);
+            Controls.Add(updateButton);
+            Controls.Add(addButton);
             Controls.Add(disconnectButton);
             Controls.Add(statusLabel);
             Controls.Add(connectButton);
@@ -121,9 +158,6 @@
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)dataView).EndInit();
-            tabPage1.ResumeLayout(false);
-            tabControl1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -136,5 +170,11 @@
         private Button disconnectButton;
         private TabPage tabPage1;
         private TabControl tabControl1;
+        private TextBox idTextBox;
+        private Label idLabel;
+        private Button addButton;
+        private Button updateButton;
+        private Button deleteButton;
+        private Button clearButton;
     }
 }

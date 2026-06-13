@@ -8,10 +8,15 @@ namespace KURSOVAYA_DATABASES
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            Application.EnableVisualStyles();
+
+            var dbService = new DataBaseManagement("Host=localhost;Database=postgres;Username=postgres;Password=0979117981");
+            var authService = new AuthService(dbService);
+
+            // Connect first, then show login
+            dbService.Connect().GetAwaiter().GetResult();
+
+            Application.Run(new LoginForm(authService));
         }
     }
 }

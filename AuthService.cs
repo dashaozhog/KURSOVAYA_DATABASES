@@ -20,14 +20,21 @@ namespace KURSOVAYA_DATABASES
 
         private async Task<string> GetPassword(string login)
         {
-            using var cmd = new NpgsqlCommand(
+            using (var conn = new NpgsqlConnection(DBman.connString))
+            {
+                conn.Open();
+
+                using var cmd = new NpgsqlCommand(
                 "SELECT user_password FROM employees WHERE login = @login LIMIT 1",
                 DBman.Connection
             );
-            cmd.Parameters.AddWithValue("@login", login);
+                cmd.Parameters.AddWithValue("@login", login);
 
-            var result = await cmd.ExecuteScalarAsync();
-            return result as string;
+                var result = await cmd.ExecuteScalarAsync();
+                await DBman.Disconnect();
+                return result as string;
+            }
+
         }
 
         public async Task Login(string login, string password)

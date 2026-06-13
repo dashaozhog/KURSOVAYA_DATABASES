@@ -1,9 +1,12 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace KURSOVAYA_DATABASES
 {
@@ -12,8 +15,10 @@ namespace KURSOVAYA_DATABASES
         public NpgsqlConnection Connection { get; private set; }
 
         public event EventHandler<ConnectionEventArgs> ConnectionChanged;
+        public event EventHandler<DataEventArgs> DataChanged;
 
-        private string connString;
+
+        public string connString;
 
 
         public DataBaseManagement(string connString)
@@ -25,15 +30,15 @@ namespace KURSOVAYA_DATABASES
         {
             try
             {
-            
+
                 Connection = new NpgsqlConnection(connString);
                 await Connection.OpenAsync();
 
                 ConnectionChanged?.Invoke(this, new ConnectionEventArgs(
                     isConnected: true,
-                    message: "Connection successful!")); 
+                    message: "Connection successful!"));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Connection?.Dispose();
                 Connection = null;
@@ -79,16 +84,100 @@ namespace KURSOVAYA_DATABASES
             {
                 while (reader.Read())
                 {
-                    tablesList.Add(reader.GetString(0)); 
+                    tablesList.Add(reader.GetString(0));
                 }
 
             }
             return tablesList;
         }
 
-        
+        public List<string> GetTableFields(TabPage tabpage)
+        {
+            var tableFields = new List<string>();
+            if (tabpage != null) {
+
+                string sql = $@"SELECT column_name
+              FROM information_schema.columns
+             WHERE table_schema = 'public'
+               AND table_name   = '{tabpage.Name}';";
+                using (var cmd = new NpgsqlCommand(sql, Connection))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        tableFields.Add(reader.GetString(0));
+                    }
+
+                }
+
+            }
+            return tableFields;
+        }
+
+        public DataTable LoadTableData(string tableName)
+        {
+            string query = $"SELECT * FROM {tableName}";
+            using (var cmd = new NpgsqlCommand(query, Connection))
+            using (var adapter = new NpgsqlDataAdapter(cmd))
+            {
+
+                DataTable table = new DataTable();
+                adapter.Fill(table);
+                return table;
+            }
+        }
+        public string GetType(string tableName, string fieldName)
+        {
+            string query = $@"SELECT data_type
+                            FROM information_schema.columns
+                            WHERE table_name = '{tableName}'
+                            AND column_name = '{fieldName}';";
+            string type = "";
+            using (var cmd = new NpgsqlCommand(query, Connection))
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    type = reader.GetString(0);
+
+                }
+
+            }
+            return type;
+        }
+
+        public async Task Add(string tableName, string fieldName, string data)
+        {
+            string query = "";
+            if (GetType(tableName, fieldName) == "integer")
+            {
+                if (!int.TryParse(data, out int field))
+                {
+                    DataChanged?.Invoke(this, new DataEventArgs(
+                        isSuccess: false,
+                        message: "Data type is inappropriate"));
+                    return;
+                }
+                query =
+                        $"INSERT INTO {tableName} ({fieldName}) " +
+                        $"VALUES (@{field})";
+            }
+            else {
+                query =
+                        $"INSERT INTO {tableName} ({fieldName}) " +
+                        $"VALUES (@{data})";
+            }
 
 
+            using (var cmd = new NpgsqlCommand(query, Connection))
+            {
+                cmd.Parameters.AddWithValue(fieldName, data);
+                int rows = cmd.ExecuteNonQuery();
+                DataChanged?.Invoke(this, new DataEventArgs(
+                    isSuccess: true,
+                    message: "Data added successfully"));
+            }
 
-    }
+        }
+    } 
 }

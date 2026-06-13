@@ -29,51 +29,40 @@
         private void InitializeComponent()
         {
             panel1 = new Panel();
-            button1 = new Button();
-            loginBox = new TextBox();
-            passwordBox = new TextBox();
-            loginLabel = new Label();
             passLabel = new Label();
+            loginLabel = new Label();
+            passwordBox = new TextBox();
+            loginBox = new TextBox();
+            submitButton = new Button();
+            errorLabel = new Label();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
             // 
             panel1.BackColor = SystemColors.Highlight;
+            panel1.Controls.Add(errorLabel);
             panel1.Controls.Add(passLabel);
             panel1.Controls.Add(loginLabel);
             panel1.Controls.Add(passwordBox);
             panel1.Controls.Add(loginBox);
-            panel1.Controls.Add(button1);
+            panel1.Controls.Add(submitButton);
             panel1.Dock = DockStyle.Fill;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
             panel1.Size = new Size(800, 450);
             panel1.TabIndex = 0;
             // 
-            // button1
+            // passLabel
             // 
-            button1.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            button1.Location = new Point(334, 266);
-            button1.Name = "button1";
-            button1.Size = new Size(120, 32);
-            button1.TabIndex = 0;
-            button1.Text = "Submit";
-            button1.UseVisualStyleBackColor = true;
-            // 
-            // loginBox
-            // 
-            loginBox.Location = new Point(344, 152);
-            loginBox.Name = "loginBox";
-            loginBox.Size = new Size(100, 23);
-            loginBox.TabIndex = 1;
-            // 
-            // passwordBox
-            // 
-            passwordBox.Location = new Point(344, 223);
-            passwordBox.Name = "passwordBox";
-            passwordBox.Size = new Size(100, 23);
-            passwordBox.TabIndex = 2;
+            passLabel.AutoSize = true;
+            passLabel.Font = new Font("Yang Bagus", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            passLabel.ForeColor = SystemColors.ButtonHighlight;
+            passLabel.Location = new Point(317, 188);
+            passLabel.Name = "passLabel";
+            passLabel.Size = new Size(158, 32);
+            passLabel.TabIndex = 4;
+            passLabel.Text = "Password";
             // 
             // loginLabel
             // 
@@ -86,16 +75,43 @@
             loginLabel.TabIndex = 3;
             loginLabel.Text = "Login";
             // 
-            // passLabel
+            // passwordBox
             // 
-            passLabel.AutoSize = true;
-            passLabel.Font = new Font("Yang Bagus", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            passLabel.ForeColor = SystemColors.ButtonHighlight;
-            passLabel.Location = new Point(317, 188);
-            passLabel.Name = "passLabel";
-            passLabel.Size = new Size(158, 32);
-            passLabel.TabIndex = 4;
-            passLabel.Text = "Password";
+            passwordBox.Location = new Point(344, 223);
+            passwordBox.Name = "passwordBox";
+            passwordBox.Size = new Size(100, 23);
+            passwordBox.TabIndex = 2;
+            // 
+            // loginBox
+            // 
+            loginBox.Location = new Point(344, 152);
+            loginBox.Name = "loginBox";
+            loginBox.Size = new Size(100, 23);
+            loginBox.TabIndex = 1;
+            // 
+            // submitButton
+            // 
+            submitButton.Font = new Font("Super Black", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            submitButton.ForeColor = SystemColors.HotTrack;
+            submitButton.Location = new Point(334, 266);
+            submitButton.Name = "submitButton";
+            submitButton.Size = new Size(120, 32);
+            submitButton.TabIndex = 0;
+            submitButton.Text = "Submit";
+            submitButton.UseVisualStyleBackColor = true;
+            submitButton.Click += submitButton_Click;
+            // 
+            // errorLabel
+            // 
+            errorLabel.AutoSize = true;
+            errorLabel.Font = new Font("Consolas", 18F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            errorLabel.ForeColor = Color.IndianRed;
+            errorLabel.Location = new Point(334, 331);
+            errorLabel.Name = "errorLabel";
+            errorLabel.Size = new Size(25, 28);
+            errorLabel.TabIndex = 5;
+            errorLabel.Text = " ";
+            errorLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // LoginForm
             // 
@@ -115,9 +131,10 @@
 
         private Panel panel1;
         private TextBox loginBox;
-        private Button button1;
+        private Button submitButton;
         private Label loginLabel;
         private TextBox passwordBox;
         private Label passLabel;
+        private Label errorLabel;
     }
 }

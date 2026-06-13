@@ -1,8 +1,11 @@
 using Npgsql;
 using System;
 using System.Data;
+using System.Reflection.Emit;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Label = System.Windows.Forms.Label;
+using TextBox = System.Windows.Forms.TextBox;
 namespace KURSOVAYA_DATABASES
 {
 
@@ -10,6 +13,8 @@ namespace KURSOVAYA_DATABASES
     {
         private DataBaseManagement DBman;
         private List<TabPage> tabPages = new List<TabPage>();
+        private float fieldFontSize = 14.25F;
+        private Dictionary<TabPage, DataGridView> tabDataGridDict = new Dictionary<TabPage, DataGridView>();
         public Form1()
         {
             InitializeComponent();
@@ -26,29 +31,16 @@ namespace KURSOVAYA_DATABASES
 
         }
 
-        //private void loadButton_Click(object sender, EventArgs e)
-        //{
-        //    try
-        //    {
-        //        using (var conn = new NpgsqlConnection(connString))
-        //        {
-        //            conn.Open();
-        //            string query = "SELECT * FROM patients";
-        //            using (var cmd = new NpgsqlCommand(query, conn))
-        //            using (var adapter = new NpgsqlDataAdapter(cmd))
-        //            {
-        //                DataTable table = new DataTable();
-        //                adapter.Fill(table);
-        //                dataView.DataSource = table;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("������� �� ��� ������������: " + ex.Message);
-        //    }
+        private void loadButton_Click(object sender, EventArgs e)
+        {
+            var tabname = tabControl1.SelectedTab;
+            var table = DBman.LoadTableData(tabname.Name);
 
-        //}
+            tabDataGridDict[tabname].DataSource = table;
+
+        }
+
+
         private void OnConnChanged(object sender, ConnectionEventArgs e)
         {
             if (e.IsConnected)
@@ -57,6 +49,8 @@ namespace KURSOVAYA_DATABASES
                 statusLabel.ForeColor = Color.Green;
                 disconnectButton.Enabled = true;
                 connectButton.Enabled = false;
+                loadButton.Enabled = true;
+
 
                 MessageBox.Show(e.Message, "Success!",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -67,17 +61,18 @@ namespace KURSOVAYA_DATABASES
                 statusLabel.ForeColor = Color.Red;
 
                 connectButton.Enabled = true;
-                disconnectButton.Enabled = true;
+                disconnectButton.Enabled = false;
+                loadButton.Enabled = false;
 
                 MessageBox.Show(e.Message, "No connection",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-    private async void disconnectButton_Click(object sender, EventArgs e)
-            {
-                disconnectButton.Enabled = false;
-                await DBman.Disconnect();
-            }
+        private async void disconnectButton_Click(object sender, EventArgs e)
+        {
+            disconnectButton.Enabled = false;
+            await DBman.Disconnect();
+        }
 
         private void LoadTabs()
         {
@@ -97,9 +92,86 @@ namespace KURSOVAYA_DATABASES
                 index++;
             }
         }
+
+
+
+        private void LoadTableFiels(TabPage tabpage)
+        {
+            int x = 24;
+            int y = 71;
+            var tableFields = DBman.GetTableFields(tabpage);
+            foreach (var f in tableFields)
+            {
+                Label idLabel = new Label();
+                idLabel.Text = f;
+                tabpage.Controls.Add(idLabel);
+                idLabel.Font = new Font("Cascadia Code", fieldFontSize, FontStyle.Regular, GraphicsUnit.Point, 204);
+                idLabel.AutoSize = true;
+                idLabel.Location = new Point(x, y);
+                idLabel.Name = $"{f}Label";
+                idLabel.TabIndex = 4;
+                idLabel.Text = $"{f}: ";
+
+                TextBox txtbox = new TextBox();
+                txtbox.Location = new Point((int)(x + fieldFontSize * f.Length), y);
+                txtbox.Name = $"{f}Box";
+                txtbox.Size = new Size(100, 23);
+                txtbox.TabIndex = 2;
+                tabpage.Controls.Add(txtbox);
+
+                y += 35;
+            }
+        }
+
+        private void DataGridSetup(TabPage tabpage)
+        {
+            DataGridView dgv = new DataGridView();
+            dgv.AllowUserToAddRows = false;
+            dgv.AllowUserToDeleteRows = false;
+            dgv.BackgroundColor = Color.White;
+            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgv.Font = new Font("Segoe UI", 9F);
+            dgv.Location = new Point(400, 57);
+            dgv.Name = $"dgv{tabpage.Name}";
+            dgv.ReadOnly = true;
+            dgv.RowHeadersVisible = false;
+            dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgv.Size = new Size(710, 460);
+            dgv.TabIndex = 3;
+            tabpage.Controls.Add(dgv);
+
+            try
+            { tabDataGridDict.Add(tabpage, dgv); }
+            catch { }
+
+        }
+
+        private void TabLoad()
+        {
+            TabPage selectedPage = tabControl1.SelectedTab;
+
+            LoadTableFiels(selectedPage);
+            DataGridSetup(selectedPage);
+        }
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            TabLoad();
+        }
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            
-        }        
+
+        }
+
+        private void tabControl1_ControlAdded(object sender, ControlEventArgs e)
+        {
+            TabLoad();
+        }
+
+        private void addButton_Click(object sender, EventArgs e)
+        {
+            DBman.Add("departments", "personal_id");
+        }
     }
 }
