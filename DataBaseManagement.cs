@@ -126,6 +126,26 @@ namespace KURSOVAYA_DATABASES
                 return table;
             }
         }
+
+        public async Task<string> GetColumnType(string tableName, string columnName)
+        {
+            string colType = "";
+            string sql = @"SELECT data_type 
+                   FROM information_schema.columns
+                   WHERE table_schema = 'public' AND table_name = @tableName AND column_name=@columnName";
+
+            using var cmd = new NpgsqlCommand(sql, Connection);
+            cmd.Parameters.AddWithValue("@tableName", tableName);
+            cmd.Parameters.AddWithValue("@columnName", columnName);
+
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+                colType = reader.GetString(0);
+
+            return colType;
+        }
+
         public async Task<Dictionary<string, string>> GetColumnTypes(string tableName)
         {
             var columnTypes = new Dictionary<string, string>();
@@ -243,6 +263,58 @@ WHERE tc.constraint_type = 'PRIMARY KEY'
                  i = reader.GetString(0);
             if(i!="") return true;
             return false;
+        }
+
+        public async Task<bool> isForeign(string tableName, string columnName)
+        {
+            string sql = $@"SELECT kcu.column_name
+FROM information_schema.table_constraints tc
+JOIN information_schema.key_column_usage kcu
+     ON tc.constraint_name = kcu.constraint_name
+     AND tc.table_schema = kcu.table_schema
+WHERE tc.constraint_type = 'FOREIGN KEY'
+  AND tc.table_name = '{tableName}'
+  AND kcu.column_name = '{columnName}';
+";
+
+            using var cmd = new NpgsqlCommand(sql, Connection);
+            string i = "";
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+                i = reader.GetString(0);
+            if (i != "") return true;
+            return false;
+        }
+
+        public async Task<List<int>> GetForeignValues(string tableName, string columnName) {
+
+            string refTable = "";
+            var dict = new List<string>();
+            string sql = $@"SELECT ccu.table_name AS foreign_table
+FROM information_schema.table_constraints AS tc
+JOIN information_schema.key_column_usage AS kcu
+  ON tc.constraint_name = kcu.constraint_name
+JOIN information_schema.constraint_column_usage AS ccu
+  ON ccu.constraint_name = tc.constraint_name
+WHERE tc.constraint_type = 'FOREIGN KEY'
+  AND tc.table_name = '{tableName}' 
+  AND kcu.column_name = '{columnName}'; ";
+
+            using var cmd = new NpgsqlCommand(sql, Connection);
+            using var reader = await cmd.ExecuteReaderAsync();
+            while(await reader.ReadAsync())
+            {
+                refTable = reader.GetString(0);
+            }
+            reader?.DisposeAsync();
+             string sql2 = $@"SELECT * from {tableName}  ";
+
+            using var cmd2 = new NpgsqlCommand(sql2, Connection);
+            using var reader2 = await cmd2.ExecuteReaderAsync();
+            while (await reader2.ReadAsync())
+                dict.Add(reader2.GetString(0));
+
+                return dict;
         }
     } 
 }

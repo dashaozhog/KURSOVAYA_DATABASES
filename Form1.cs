@@ -3,9 +3,16 @@ using System;
 using System.Data;
 using System.Reflection.Emit;
 using System.Windows.Forms;
+using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Button = System.Windows.Forms.Button;
+using ComboBox = System.Windows.Forms.ComboBox;
 using Label = System.Windows.Forms.Label;
 using TextBox = System.Windows.Forms.TextBox;
+
+
+//выпадающее меню на вторичные ключи
+//выбор даты на дату
 namespace KURSOVAYA_DATABASES
 {
 
@@ -99,9 +106,18 @@ namespace KURSOVAYA_DATABASES
             int x = 24;
             int y = 71;
             var tableFields = await DBman.GetTableFields(tabpage);
+            
             foreach (var f in tableFields)
             {
-                Label idLabel = new Label();
+                string type = await DBman.GetColumnType(tabpage.Name, f);
+
+                Label idLabel;
+                TextBox txtbox = new TextBox();
+                DateTimePicker dtp = new DateTimePicker();
+
+                int x2 = x + (int)(fieldFontSize * f.Length);
+
+                idLabel = new Label();
                 idLabel.Text = f;
                 tabpage.Controls.Add(idLabel);
                 idLabel.Font = new Font("Cascadia Code", fieldFontSize, FontStyle.Regular, GraphicsUnit.Point, 204);
@@ -111,8 +127,9 @@ namespace KURSOVAYA_DATABASES
                 idLabel.TabIndex = 4;
                 idLabel.Text = $"{f}: ";
 
-                TextBox txtbox = new TextBox();
-                txtbox.Location = new Point((int)(x + fieldFontSize * f.Length), y);
+                if (!await DBman.isForeign(tabpage.Name, f) && type != "timestamp without time zone")
+                {
+                    txtbox.Location = new Point(x2, y);
                 txtbox.Name = $"{f}Box";
                 txtbox.Size = new Size(100, 23);
                 txtbox.TabIndex = 2;
@@ -121,6 +138,48 @@ namespace KURSOVAYA_DATABASES
                 if(await DBman.isPrimary(tabpage.Name, f))
                 {
                     txtbox.Enabled = false;
+                }
+
+                if (f.ToLower() == "digital_sign" || f.ToLower().Contains("uuid"))
+                {
+                    
+                    txtbox.ReadOnly = true;
+                    Button btnGenerate = new Button();
+                    btnGenerate.Text = "Generate";
+                    btnGenerate.AutoSize = true;
+                    btnGenerate.Location = new Point(x2 + txtbox.Width + 10, y - 2);
+                    tabpage.Controls.Add(btnGenerate);
+
+                    btnGenerate.Click += (sender, e) =>
+                    {
+                        txtbox.Text = Guid.NewGuid().ToString();
+                    };
+                    }
+                }
+
+                if (type=="timestamp without time zone")
+                {
+                    dtp.Location = new Point(x2, y);
+                    dtp.Name = $"{f}dateTime";
+                    dtp.Size = new Size(200, 23);
+                    dtp.TabIndex = 11;
+
+                    tabpage.Controls.Add(dtp);
+                }
+
+                if(await DBman.isForeign(tabpage.Name, f))
+                {
+                    var forvals = await DBman.GetForeignValues(tabpage.Name, f);
+                    
+                    var drop = new ComboBox();
+                    drop.FormattingEnabled = true;
+                    drop.Items.AddRange(forvals);
+                    drop.Location = new Point(x2, y);
+                    drop.Name = $"{f}DropDown";
+                    drop.Size = new Size(121, 23);
+                    drop.TabIndex = 11;
+
+                    tabpage.Controls.Add(drop);
                 }
 
                 y += 35;
