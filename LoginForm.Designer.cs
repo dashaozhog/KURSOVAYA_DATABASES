@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             panel1 = new Panel();
+            errorLabel = new Label();
             passLabel = new Label();
             loginLabel = new Label();
             passwordBox = new TextBox();
             loginBox = new TextBox();
             submitButton = new Button();
-            errorLabel = new Label();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -52,6 +52,18 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(800, 450);
             panel1.TabIndex = 0;
+            // 
+            // errorLabel
+            // 
+            errorLabel.AutoSize = true;
+            errorLabel.Font = new Font("Consolas", 18F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            errorLabel.ForeColor = Color.IndianRed;
+            errorLabel.Location = new Point(334, 331);
+            errorLabel.Name = "errorLabel";
+            errorLabel.Size = new Size(25, 28);
+            errorLabel.TabIndex = 5;
+            errorLabel.Text = " ";
+            errorLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // passLabel
             // 
@@ -79,6 +91,7 @@
             // 
             passwordBox.Location = new Point(344, 223);
             passwordBox.Name = "passwordBox";
+            passwordBox.PasswordChar = '*';
             passwordBox.Size = new Size(100, 23);
             passwordBox.TabIndex = 2;
             // 
@@ -100,18 +113,6 @@
             submitButton.Text = "Submit";
             submitButton.UseVisualStyleBackColor = true;
             submitButton.Click += submitButton_Click;
-            // 
-            // errorLabel
-            // 
-            errorLabel.AutoSize = true;
-            errorLabel.Font = new Font("Consolas", 18F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            errorLabel.ForeColor = Color.IndianRed;
-            errorLabel.Location = new Point(334, 331);
-            errorLabel.Name = "errorLabel";
-            errorLabel.Size = new Size(25, 28);
-            errorLabel.TabIndex = 5;
-            errorLabel.Text = " ";
-            errorLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // LoginForm
             // 
