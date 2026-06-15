@@ -95,6 +95,7 @@
             // addButton
             // 
             addButton.BackColor = SystemColors.HotTrack;
+            addButton.Enabled = false;
             addButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
             addButton.ForeColor = SystemColors.HighlightText;
             addButton.Location = new Point(1181, 249);
@@ -108,6 +109,7 @@
             // updateButton
             // 
             updateButton.BackColor = Color.LimeGreen;
+            updateButton.Enabled = false;
             updateButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
             updateButton.ForeColor = SystemColors.HighlightText;
             updateButton.Location = new Point(1181, 301);
@@ -116,10 +118,12 @@
             updateButton.TabIndex = 8;
             updateButton.Text = "Update";
             updateButton.UseVisualStyleBackColor = false;
+            updateButton.Click += updateButton_Click;
             // 
             // deleteButton
             // 
             deleteButton.BackColor = Color.Crimson;
+            deleteButton.Enabled = false;
             deleteButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
             deleteButton.ForeColor = SystemColors.HighlightText;
             deleteButton.Location = new Point(1181, 356);
@@ -128,10 +132,12 @@
             deleteButton.TabIndex = 9;
             deleteButton.Text = "Delete";
             deleteButton.UseVisualStyleBackColor = false;
+            deleteButton.Click += deleteButton_Click;
             // 
             // clearButton
             // 
             clearButton.BackColor = Color.Black;
+            clearButton.Enabled = false;
             clearButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 204);
             clearButton.ForeColor = SystemColors.HighlightText;
             clearButton.Location = new Point(1181, 409);
@@ -140,6 +146,7 @@
             clearButton.TabIndex = 10;
             clearButton.Text = "Clear";
             clearButton.UseVisualStyleBackColor = false;
+            clearButton.Click += clearButton_Click;
             // 
             // Form1
             // 

@@ -1,6 +1,7 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,20 +21,20 @@ namespace KURSOVAYA_DATABASES
 
         private async Task<string> GetPassword(string login)
         {
-            using (var conn = new NpgsqlConnection(DBman.connString))
+            if (DBman.Connection == null || DBman.Connection.State != ConnectionState.Open)
             {
-                conn.Open();
+                await DBman.Connect();
+            }
 
-                using var cmd = new NpgsqlCommand(
+            using var cmd = new NpgsqlCommand(
                 "SELECT user_password FROM employees WHERE login = @login LIMIT 1",
                 DBman.Connection
             );
                 cmd.Parameters.AddWithValue("@login", login);
 
                 var result = await cmd.ExecuteScalarAsync();
-                await DBman.Disconnect();
                 return result as string;
-            }
+            
 
         }
 
